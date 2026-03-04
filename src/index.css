@@ -1,0 +1,394 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    @apply min-h-full bg-gradient-to-br from-[#07020D] via-[#12002A] to-black bg-fixed;
+  }
+
+  body {
+    @apply min-h-full text-slate-100 antialiased bg-transparent;
+  }
+
+  #root {
+    @apply min-h-screen;
+  }
+
+  a {
+    @apply text-inherit no-underline;
+  }
+}
+
+@layer components {
+  .page {
+    @apply min-h-screen;
+  }
+
+  .content {
+    @apply mx-auto w-full max-w-6xl px-6 py-8 grid gap-6;
+  }
+
+  .header {
+    @apply sticky top-0 z-20 border-b border-white/10 bg-black/40 backdrop-blur;
+  }
+
+  .headerInner {
+    @apply mx-auto w-full max-w-6xl px-6 py-5 flex items-center justify-between gap-6;
+  }
+
+  .headerBack {
+    @apply absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 z-30;
+  }
+
+  .btn.headerBack {
+    @apply h-10 w-10 min-w-10 rounded-full px-0;
+  }
+
+  .headerBackIcon {
+    @apply h-5 w-5 block;
+  }
+
+  .btn.headerBack:active {
+    transform: translateY(-50%);
+  }
+
+  .brand {
+    @apply flex items-center gap-3;
+  }
+
+  .brandMarks {
+    @apply flex items-center;
+  }
+
+  .brandMark {
+    @apply h-[72px] w-[72px] rounded-2xl bg-white/5 ring-1 ring-white/10 overflow-hidden grid place-items-center;
+  }
+
+  .brandLogo {
+    @apply h-full w-full object-contain p-3;
+  }
+
+  .brandLogoCnb {
+    @apply p-2;
+  }
+
+  .titleLead {
+    @apply inline-flex items-center rounded-full bg-violet-500/10 text-violet-200 ring-1 ring-violet-400/20 px-3 py-1 text-[11px] font-black tracking-[0.18em] uppercase;
+  }
+
+  .title {
+    @apply mt-2 text-xl sm:text-2xl font-black tracking-tight;
+  }
+
+  .subtitle {
+    @apply mt-1 text-sm text-slate-300 font-semibold;
+  }
+
+  .headerActions {
+    @apply flex items-center gap-3;
+  }
+
+  .card {
+    @apply rounded-2xl border border-white/10 bg-white/5 shadow-[0_16px_50px_rgba(0,0,0,0.35)] backdrop-blur px-5 py-5;
+  }
+
+  .cardTitle {
+    @apply text-sm uppercase tracking-[0.18em] font-black text-slate-200;
+  }
+
+  .cardTitleHero {
+    @apply text-2xl not-italic normal-case tracking-tight;
+  }
+
+  .cardHint {
+    @apply mt-2 text-sm text-slate-300;
+  }
+
+  .pill {
+    @apply inline-flex items-center justify-center rounded-full border border-violet-400/20 bg-violet-500/10 px-3 py-1 text-xs font-extrabold text-violet-200;
+  }
+
+  .empty {
+    @apply mt-4 rounded-xl border border-dashed border-white/15 bg-black/20 px-4 py-4 text-slate-300;
+  }
+
+  .callout {
+    @apply mt-4 rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-slate-200;
+  }
+
+  .success {
+    @apply border-l-4 border-violet-400;
+  }
+
+  .formGrid {
+    @apply grid grid-cols-1 gap-4;
+  }
+
+  @screen md {
+    .formGrid {
+      @apply grid-cols-2;
+    }
+    .span2 {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .field label {
+    @apply block text-sm font-extrabold text-slate-200 mb-2;
+  }
+
+  input:not([type='checkbox']),
+  textarea,
+  select {
+    @apply w-full rounded-xl border border-white/10 bg-black/25 px-4 py-3 text-slate-100 placeholder:text-slate-500 outline-none ring-0;
+  }
+
+  input:not([type='checkbox']):focus,
+  textarea:focus,
+  select:focus {
+    @apply border-violet-400/40 ring-4 ring-violet-500/15;
+  }
+
+  .error {
+    @apply mt-2 text-sm font-bold text-rose-300;
+  }
+
+  .actions {
+    @apply mt-4 flex flex-wrap items-center gap-3;
+  }
+
+  .btn {
+    @apply inline-flex h-12 items-center justify-center whitespace-nowrap rounded-2xl px-5 text-base font-extrabold text-white bg-gradient-to-r from-violet-600 to-indigo-600 shadow-[0_12px_30px_rgba(124,58,237,0.25)] ring-1 ring-white/10 hover:from-violet-500 hover:to-indigo-500 active:translate-y-[1px] transition;
+  }
+
+  .btn:disabled {
+    @apply opacity-60 cursor-not-allowed;
+  }
+
+  .btnGhost {
+    @apply h-12 bg-white/0 text-slate-100 border border-white/15 shadow-none hover:bg-white/5 hover:from-transparent hover:to-transparent;
+  }
+
+  .listHeader {
+    @apply flex items-center justify-between gap-4;
+  }
+
+  .list {
+    @apply mt-4 flex flex-col gap-4;
+  }
+
+  .submission {
+    @apply rounded-2xl border border-white/10 bg-black/20 px-4 py-4;
+  }
+
+  .submissionTitle {
+    @apply text-lg font-black tracking-tight;
+  }
+
+  .submissionMeta {
+    @apply mt-1 text-sm text-slate-300 font-semibold flex flex-wrap gap-2 items-center;
+  }
+
+  .metaDot {
+    @apply opacity-60;
+  }
+
+  .link {
+    @apply text-sm font-extrabold text-violet-200 hover:underline;
+  }
+
+  .preview {
+    @apply block mt-4 overflow-hidden rounded-2xl border border-white/10 bg-black/25;
+  }
+
+  .previewHeader {
+    @apply h-10 flex items-center gap-3 px-4 border-b border-white/10 bg-black/30;
+  }
+
+  .previewDots {
+    @apply inline-flex items-center gap-2;
+  }
+
+  .dot {
+    @apply h-2 w-2 rounded-full bg-white/20;
+  }
+
+  .previewLabel {
+    @apply ml-auto text-[11px] font-black tracking-[0.18em] uppercase text-violet-200/80;
+  }
+
+  .previewBody {
+    @apply aspect-video bg-black/10;
+  }
+
+  .previewIframe {
+    @apply block h-full w-full;
+    border: 0;
+    pointer-events: none;
+  }
+
+  .featuredCarousel {
+    @apply mt-4;
+  }
+
+  .featuredViewport {
+    @apply overflow-hidden;
+  }
+
+  .featuredTrack {
+    @apply flex w-full;
+    transition: transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+  }
+
+  .featuredSlide {
+    @apply flex-[0_0_100%];
+  }
+
+  .submissionTop {
+    @apply flex items-start justify-between gap-4;
+  }
+
+  .submissionActions {
+    @apply flex flex-col items-end gap-2;
+  }
+
+  .voteButton {
+    @apply px-4 py-2 text-sm;
+  }
+
+  .submissionFeatured {
+    @apply p-6;
+  }
+
+  .submissionFeatured .previewBody {
+    @apply aspect-auto h-72 sm:h-80 md:h-[440px];
+  }
+
+  .submissionBody {
+    @apply mt-5 grid grid-cols-1 gap-4 md:grid-cols-2;
+  }
+
+  .blockLabel {
+    @apply text-xs font-black tracking-[0.18em] uppercase text-violet-200/80;
+  }
+
+  .blockText {
+    @apply mt-2 text-sm text-slate-200/90 font-semibold leading-relaxed;
+  }
+
+  .featuredDots {
+    @apply mt-4 flex justify-center gap-2;
+  }
+
+  .featuredDot {
+    @apply h-2.5 w-2.5 rounded-full border border-white/15 bg-white/10;
+  }
+
+  .featuredDotActive {
+    @apply w-7 bg-gradient-to-r from-violet-500 to-indigo-500 border-white/0;
+  }
+
+  .compactList {
+    @apply mt-4 grid grid-cols-1 gap-4;
+  }
+
+  @screen md {
+    .compactList {
+      @apply grid-cols-2;
+    }
+  }
+
+  @screen lg {
+    .compactList {
+      @apply grid-cols-3;
+    }
+  }
+
+  .compactCard {
+    @apply rounded-2xl border border-white/10 bg-black/20 p-4 hover:bg-black/30 transition;
+  }
+
+  .compactTop {
+    @apply flex items-start justify-between gap-3;
+  }
+
+  .compactTitle {
+    @apply text-base font-black tracking-tight bg-gradient-to-r from-violet-200 to-indigo-200 bg-clip-text text-transparent;
+  }
+
+  .compactMeta {
+    @apply mt-1 text-sm text-slate-300 font-semibold;
+  }
+
+  .compactAction {
+    @apply rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-extrabold text-slate-100;
+  }
+
+  .compactFooter {
+    @apply mt-3 flex items-center justify-between gap-3;
+  }
+
+  .compactVotes {
+    @apply text-sm font-extrabold text-violet-200;
+  }
+
+  .compactVoteButton {
+    @apply px-4 py-2 text-sm;
+  }
+
+  .thumb {
+    @apply block mt-3 overflow-hidden rounded-2xl border border-white/10 bg-black/25;
+  }
+
+  .thumbCompact {
+    @apply h-44;
+  }
+
+  @screen lg {
+    .thumbCompact {
+      @apply h-48;
+    }
+  }
+
+  .thumbImg {
+    @apply h-full w-full object-cover object-top;
+  }
+
+  .hackathonHero {
+    @apply mt-6 w-full text-left rounded-3xl border border-white/10 bg-gradient-to-r from-violet-700/30 via-indigo-700/20 to-black/10 shadow-[0_30px_90px_rgba(0,0,0,0.55)] ring-1 ring-white/10 px-8 py-8 hover:from-violet-700/40 hover:via-indigo-700/25 transition;
+  }
+
+  .hackathonHeroTop {
+    @apply flex items-start justify-between gap-6;
+  }
+
+  .hackathonHeroTitle {
+    @apply text-3xl sm:text-4xl font-black tracking-tight;
+  }
+
+  .hackathonHeroLogoWrap {
+    @apply mb-4 h-14 w-14 rounded-2xl bg-white/10 ring-1 ring-white/20 overflow-hidden grid place-items-center;
+  }
+
+  .hackathonHeroLogo {
+    @apply h-full w-full object-contain p-2;
+  }
+
+  .hackathonHeroMeta {
+    @apply mt-3 text-base text-slate-200/90 font-semibold flex flex-wrap gap-3 items-center;
+  }
+
+  .hackathonHeroAction {
+    @apply inline-flex h-12 items-center justify-center rounded-2xl px-6 text-base font-extrabold bg-white/5 border border-white/15 text-slate-100;
+  }
+
+  .adminLogoPreview {
+    @apply h-16 w-16 rounded-2xl bg-white/10 ring-1 ring-white/20 object-contain p-2;
+  }
+}
