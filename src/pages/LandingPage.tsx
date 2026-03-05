@@ -1,309 +1,199 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { isSupabaseConfigured, supabase } from '../lib/supabaseClient'
+import { supabase, isSupabaseConfigured } from '../lib/supabaseClient'
 
 export default function LandingPage() {
   const navigate = useNavigate()
-  const [tab, setTab] = useState<'signup' | 'login'>('signup')
-
-  const [signupName, setSignupName] = useState('')
-  const [signupEmail, setSignupEmail] = useState('')
-  const [signupPassword, setSignupPassword] = useState('')
-  const [signupBusy, setSignupBusy] = useState(false)
-  const [signupMsg, setSignupMsg] = useState<string | null>(null)
-
-  const [loginEmail, setLoginEmail] = useState('')
-  const [loginPassword, setLoginPassword] = useState('')
-  const [loginBusy, setLoginBusy] = useState(false)
-
+  const [isLogin, setIsLogin] = useState(true)
+  const [name, setName] = useState('')
+  const [password, setPassword] = useState('')
+  const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  function getRedirectTo() {
-    return window.location.origin
-  }
-
-  function submitSignup(e: FormEvent<HTMLFormElement>) {
+  function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
     if (!supabase) return
     setError(null)
-    setSignupMsg(null)
 
-    const name = signupName.trim()
-    const email = signupEmail.trim()
-    const password = signupPassword
-    if (!name || !email || !password) {
-      setError('Name, email, and password are required.')
+    const trimmedName = name.trim()
+    const trimmedPassword = password
+    if (!trimmedName || !trimmedPassword) {
+      setError('Name and password are required.')
       return
     }
 
-    setSignupBusy(true)
+    if (!trimmedName.includes('@')) {
+      setError('Please enter your email address in the name field.')
+      return
+    }
+
+    setBusy(true)
     void (async () => {
       try {
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: getRedirectTo(),
-            data: { display_name: name },
-          },
-        })
-        if (error) throw error
-
-        if (!data.session) {
-          setSignupMsg('Check your inbox to confirm your email. After confirming, come back and log in.')
-          setTab('login')
+        if (isLogin) {
+          const { error } = await supabase.auth.signInWithPassword({
+            email: trimmedName,
+            password: trimmedPassword,
+          })
+          if (error) throw error
+          navigate('/hackathons')
         } else {
+          const { error } = await supabase.auth.signUp({
+            email: trimmedName,
+            password: trimmedPassword,
+            options: { emailRedirectTo: `${window.location.origin}/hackathons` },
+          })
+          if (error) throw error
           navigate('/hackathons')
         }
-
-        setSignupName('')
-        setSignupEmail('')
-        setSignupPassword('')
       } catch (err) {
         console.error(err)
-        setError('Sign up failed. Please try a different email or a stronger password.')
+        setError(
+          isLogin
+            ? 'Login failed. Check your credentials (and confirm your email if you just signed up).'
+            : 'Sign up failed. Please try again.',
+        )
       } finally {
-        setSignupBusy(false)
-      }
-    })()
-  }
-
-  function submitLogin(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    if (!supabase) return
-    setError(null)
-
-    const email = loginEmail.trim()
-    const password = loginPassword
-    if (!email || !password) {
-      setError('Email and password are required.')
-      return
-    }
-
-    setLoginBusy(true)
-    void (async () => {
-      try {
-        const { error } = await supabase.auth.signInWithPassword({ email, password })
-        if (error) throw error
-        navigate('/hackathons')
-      } catch (err) {
-        console.error(err)
-        setError('Login failed. Check your credentials (and confirm your email if you just signed up).')
-      } finally {
-        setLoginBusy(false)
+        setBusy(false)
       }
     })()
   }
 
   return (
-    <div className="min-h-[calc(100vh-3rem)] grid place-items-center py-10">
-      <div className="w-full max-w-md">
-        <div className="rounded-3xl border border-white/10 bg-black/35 shadow-[0_30px_90px_rgba(0,0,0,0.6)] backdrop-blur px-7 py-8">
-          <div className="flex items-center justify-center">
-            <div className="h-16 w-16 rounded-2xl bg-white/5 ring-1 ring-white/10 grid place-items-center overflow-hidden">
-              <img
-                src="/assets/chatandbuild-logo.jpg"
-                alt="ChatAndBuild logo"
-                className="h-full w-full object-contain p-2"
-              />
+    <div className="landingPage">
+      <div className="landingHero">
+        <div className="landingHeroContent">
+          <div className="flex items-center justify-center gap-4 mb-8">
+            <img src="/assets/aoai-logo.png" alt="AOAI Logo" className="w-16 h-16 object-contain" />
+            <span className="text-4xl font-bold text-white">×</span>
+            <img src="/assets/chatandbuild-logo.jpg" alt="ChatAndBuild Logo" className="w-16 h-16 object-contain rounded-lg" />
+          </div>
+          <h1 className="landingTitle">AOAI × ChatAndBuild Hackathon</h1>
+          <p className="landingSubtitle">Submit your innovative AI-powered applications and compete for prizes</p>
+          <div className="landingFeatures">
+            <div className="landingFeature">
+              <svg className="landingFeatureIcon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span>Easy submission process</span>
+            </div>
+            <div className="landingFeature">
+              <svg className="landingFeatureIcon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M17 20H22V18C22 16.3431 20.6569 15 19 15C18.0444 15 17.1931 15.4468 16.6438 16.1429M17 20H7M17 20V18C17 17.3438 16.8736 16.717 16.6438 16.1429M7 20H2V18C2 16.3431 3.34315 15 5 15C5.95561 15 6.80686 15.4468 7.35625 16.1429M7 20V18C7 17.3438 7.12642 16.717 7.35625 16.1429M7.35625 16.1429C8.0935 14.301 9.89482 13 12 13C14.1052 13 15.9065 14.301 16.6438 16.1429M15 7C15 8.65685 13.6569 10 12 10C10.3431 10 9 8.65685 9 7C9 5.34315 10.3431 4 12 4C13.6569 4 15 5.34315 15 7ZM21 10C21 11.1046 20.1046 12 19 12C17.8954 12 17 11.1046 17 10C17 8.89543 17.8954 8 19 8C20.1046 8 21 8.89543 21 10ZM7 10C7 11.1046 6.10457 12 5 12C3.89543 12 3 11.1046 3 10C3 8.89543 3.89543 8 5 8C6.10457 8 7 8.89543 7 10Z"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span>Community voting</span>
+            </div>
+            <div className="landingFeature">
+              <svg className="landingFeatureIcon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M12 15V17M6 21H18C19.1046 21 20 20.1046 20 19V13.4142C20 12.8838 19.7893 12.3751 19.4142 12L14 6.58579C13.6249 6.21071 13.1162 6 12.5858 6H6C4.89543 6 4 6.89543 4 8V19C4 20.1046 4.89543 21 6 21ZM12 11H12.01V11.01H12V11Z"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span>Showcase your work</span>
             </div>
           </div>
+        </div>
+      </div>
 
-          <div className="mt-5 text-center">
-            <div className="text-xs font-black tracking-[0.18em] uppercase text-violet-200/80">
-              AOAI x ChatAndBuild
-            </div>
-            <h1 className="mt-2 text-2xl font-black tracking-tight">Hackathon Submission Portal</h1>
-            <p className="mt-2 text-sm text-slate-300 font-semibold">
-              {tab === 'signup' ? 'Create an account to continue.' : 'Log in to continue.'}
-            </p>
-          </div>
+      <div className="landingForm">
+        <section className="card">
+          <h2 className="cardTitle cardTitleHero">{isLogin ? 'Log in' : 'Sign up'}</h2>
+          <p className="cardHint">{isLogin ? 'Log in with your email and password.' : 'Create your account to get started.'}</p>
 
           {!isSupabaseConfigured ? (
-            <div className="mt-6 rounded-2xl border border-white/10 bg-black/25 px-4 py-4 text-slate-300">
-              Supabase is not configured on this deployment.
-            </div>
+            <div className="empty">Supabase is not configured on this deployment.</div>
           ) : (
             <>
-              <div className="mt-6 grid grid-cols-2 gap-2 rounded-2xl bg-white/5 p-1 ring-1 ring-white/10">
-                <button
-                  type="button"
-                  onClick={() => setTab('signup')}
-                  className={
-                    tab === 'signup'
-                      ? 'rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-3 py-2 text-sm font-extrabold'
-                      : 'rounded-xl px-3 py-2 text-sm font-extrabold text-slate-200/80 hover:bg-white/5'
-                  }
-                >
-                  Sign up
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setTab('login')}
-                  className={
-                    tab === 'login'
-                      ? 'rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-3 py-2 text-sm font-extrabold'
-                      : 'rounded-xl px-3 py-2 text-sm font-extrabold text-slate-200/80 hover:bg-white/5'
-                  }
-                >
-                  Log in
-                </button>
-              </div>
-
               {error && (
-                <div className="mt-4 rounded-2xl border border-white/10 bg-black/25 px-4 py-3 text-sm text-rose-200 font-bold">
+                <div className="callout" role="status">
                   {error}
                 </div>
               )}
 
-              {tab === 'signup' ? (
-                <form className="mt-5 grid gap-3" onSubmit={submitSignup} noValidate>
-                  <div>
-                    <label className="block text-sm font-extrabold text-slate-200 mb-2" htmlFor="signupName">
-                      Name
+              <form className="form" onSubmit={submit} noValidate>
+                <div className="formGrid">
+                  <div className="field span2">
+                    <label htmlFor="landingName">
+                      Email <span className="req">*</span>
                     </label>
                     <input
-                      id="signupName"
-                      value={signupName}
-                      onChange={(e) => setSignupName(e.target.value)}
-                      placeholder="e.g. Shely E"
-                      autoComplete="name"
-                      disabled={signupBusy}
-                      className="w-full rounded-xl border border-white/10 bg-black/25 px-4 py-3 text-slate-100 placeholder:text-slate-500 outline-none focus:border-violet-400/40 focus:ring-4 focus:ring-violet-500/15"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-extrabold text-slate-200 mb-2" htmlFor="signupEmail">
-                      Email
-                    </label>
-                    <input
-                      id="signupEmail"
-                      value={signupEmail}
-                      onChange={(e) => setSignupEmail(e.target.value)}
+                      id="landingName"
+                      name="landingName"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
                       placeholder="you@example.com"
                       autoComplete="email"
-                      inputMode="email"
-                      disabled={signupBusy}
-                      className="w-full rounded-xl border border-white/10 bg-black/25 px-4 py-3 text-slate-100 placeholder:text-slate-500 outline-none focus:border-violet-400/40 focus:ring-4 focus:ring-violet-500/15"
+                      disabled={busy}
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-extrabold text-slate-200 mb-2" htmlFor="signupPassword">
-                      Password
+                  <div className="field span2">
+                    <label htmlFor="landingPassword">
+                      Password <span className="req">*</span>
                     </label>
                     <input
-                      id="signupPassword"
+                      id="landingPassword"
+                      name="landingPassword"
                       type="password"
-                      value={signupPassword}
-                      onChange={(e) => setSignupPassword(e.target.value)}
-                      placeholder="Create a password"
-                      autoComplete="new-password"
-                      disabled={signupBusy}
-                      className="w-full rounded-xl border border-white/10 bg-black/25 px-4 py-3 text-slate-100 placeholder:text-slate-500 outline-none focus:border-violet-400/40 focus:ring-4 focus:ring-violet-500/15"
-                    />
-                  </div>
-
-                  {signupMsg && (
-                    <div className="rounded-2xl border border-white/10 bg-black/25 px-4 py-3 text-sm text-slate-200 font-semibold">
-                      {signupMsg}
-                    </div>
-                  )}
-
-                  <button className="btn w-full mt-1" type="submit" disabled={signupBusy}>
-                    {signupBusy ? 'Creating…' : 'Create account'}
-                  </button>
-
-                  <p className="text-xs text-slate-400 text-center mt-1">
-                    By continuing, you agree to the hackathon submission rules.
-                  </p>
-                </form>
-              ) : (
-                <form className="mt-5 grid gap-3" onSubmit={submitLogin} noValidate>
-                  <div>
-                    <label className="block text-sm font-extrabold text-slate-200 mb-2" htmlFor="loginEmail">
-                      Email
-                    </label>
-                    <input
-                      id="loginEmail"
-                      value={loginEmail}
-                      onChange={(e) => setLoginEmail(e.target.value)}
-                      placeholder="you@example.com"
-                      autoComplete="email"
-                      disabled={loginBusy}
-                      className="w-full rounded-xl border border-white/10 bg-black/25 px-4 py-3 text-slate-100 placeholder:text-slate-500 outline-none focus:border-violet-400/40 focus:ring-4 focus:ring-violet-500/15"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-extrabold text-slate-200 mb-2" htmlFor="loginPassword">
-                      Password
-                    </label>
-                    <input
-                      id="loginPassword"
-                      type="password"
-                      value={loginPassword}
-                      onChange={(e) => setLoginPassword(e.target.value)}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                       placeholder="Your password"
-                      autoComplete="current-password"
-                      disabled={loginBusy}
-                      className="w-full rounded-xl border border-white/10 bg-black/25 px-4 py-3 text-slate-100 placeholder:text-slate-500 outline-none focus:border-violet-400/40 focus:ring-4 focus:ring-violet-500/15"
+                      autoComplete={isLogin ? 'current-password' : 'new-password'}
+                      disabled={busy}
                     />
                   </div>
+                </div>
 
-                  <button className="btn w-full mt-1" type="submit" disabled={loginBusy}>
-                    {loginBusy ? 'Logging in…' : 'Log in'}
+                <div className="actions">
+                  <button className="btn" type="submit" disabled={busy}>
+                    {busy ? (isLogin ? 'Logging in…' : 'Signing up…') : isLogin ? 'Log in' : 'Sign up'}
                   </button>
+                  <button className="btn btnGhost" type="button" onClick={() => setIsLogin(!isLogin)} disabled={busy}>
+                    {isLogin ? 'Create account' : 'Already have an account?'}
+                  </button>
+                </div>
+              </form>
 
-                  <Link
-                    to="/admin-login"
-                    className="w-full mt-1 rounded-xl px-4 py-3 text-center text-sm font-extrabold text-slate-200/90 ring-1 ring-white/15 hover:bg-white/5"
-                  >
-                    Admin Login
-                  </Link>
-
-                  <div className="text-center text-xs text-slate-400">
-                    Need an account?{' '}
-                    <button type="button" className="font-extrabold text-violet-200 hover:underline" onClick={() => setTab('signup')}>
-                      Sign up
-                    </button>
-                  </div>
-
-                  <div className="text-center text-xs text-slate-400">
-                    <Link className="font-extrabold text-violet-200 hover:underline" to="/forgot">
-                      Forgot password?
-                    </Link>
-                  </div>
-                </form>
-              )}
-
-              <div className="mt-6 pt-6 border-t border-white/10 flex items-center justify-center gap-2">
-                <span className="text-xs text-slate-400 font-semibold">Built with</span>
-                <a 
-                  href="https://chatandbuild.com" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 ring-1 ring-white/10 hover:bg-white/10 transition-colors"
-                  aria-label="Built with ChatAndBuild"
-                >
-                  <img 
-                    src="/assets/chatandbuild-logo.jpg" 
-                    alt="ChatAndBuild" 
-                    className="h-4 w-4 rounded"
-                  />
-                  <span className="text-xs font-bold text-slate-200">ChatAndBuild</span>
-                </a>
-              </div>
-
-              <div className="mt-4 text-center">
-                <Link className="text-xs font-bold text-slate-400 hover:text-slate-200" to="#">
-                  Privacy
-                </Link>
+              <div className="mt-6 pt-6 border-t border-white/10 text-center text-xs text-slate-400">
+                <p>
+                  By using this platform, you agree to our{' '}
+                  <a href="#" className="text-violet-300 hover:text-violet-200 font-semibold">
+                    Terms of Service
+                  </a>{' '}
+                  and{' '}
+                  <a href="#" className="text-violet-300 hover:text-violet-200 font-semibold">
+                    Privacy Policy
+                  </a>
+                  .
+                </p>
               </div>
             </>
           )}
-        </div>
+        </section>
+
+        <footer className="landingFooter">
+          <a href="https://chatandbuild.com" target="_blank" rel="noopener noreferrer" className="landingFooterBadge">
+            <span className="landingFooterBadgeText">Built with</span>
+            <img src="/assets/chatandbuild-logo.jpg" alt="ChatAndBuild" className="landingFooterBadgeLogo" />
+            <span className="landingFooterBadgeText">ChatAndBuild</span>
+          </a>
+        </footer>
       </div>
     </div>
   )

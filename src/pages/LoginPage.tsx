@@ -103,6 +103,20 @@ export default function LoginPage() {
               </Link>
             </div>
           </form>
+
+          <div className="mt-6 pt-6 border-t border-white/10 text-center text-xs text-slate-400">
+            <p>
+              By using this platform, you agree to our{' '}
+              <a href="#" className="text-violet-300 hover:text-violet-200 font-semibold">
+                Terms of Service
+              </a>{' '}
+              and{' '}
+              <a href="#" className="text-violet-300 hover:text-violet-200 font-semibold">
+                Privacy Policy
+              </a>
+              .
+            </p>
+          </div>
         </>
       )}
     </section>

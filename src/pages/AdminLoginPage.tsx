@@ -1,8 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-
-const ADMIN_EMAIL = 'admin@aoai.local'
-const ADMIN_PASSWORD = 'admin123'
+import { verifyAdminCredentials } from '../lib/adminAuth'
 
 type AdminLoginPageProps = {
   onAuthenticated: () => void
@@ -34,8 +32,9 @@ export default function AdminLoginPage({ onAuthenticated }: AdminLoginPageProps)
     setBusy(true)
     void (async () => {
       try {
-        await Promise.resolve()
-        if (trimmedEmail !== ADMIN_EMAIL || trimmedPassword !== ADMIN_PASSWORD) {
+        const isValid = await verifyAdminCredentials(trimmedEmail, trimmedPassword)
+        
+        if (!isValid) {
           throw new Error('Invalid admin credentials')
         }
 
